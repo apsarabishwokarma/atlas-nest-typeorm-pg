@@ -1,0 +1,26 @@
+## Basic things
+
+- always add modules inside `src/modules`
+- use feature wise modules, eg: `users` should contain
+  - `users.entity.ts` -> contain all the entities related to users along with enums and other values
+  - `users.controller.ts` -> contain user endpoints, authorizations, routing
+  - `users.service.ts` -> contain all the users related services reusable services, for protected functions use this pattern `getProperty(id:string, ownerId?:string)` so that the function can be reusable to get the property of certain user or get property by id only. Scenario: in user controller, we should pass both and the ownerId should also be passed to the database, so if any mismatch the db will throw an error. But this leaves us open to just using the property id, which can be used without authorizations. `where:{id:id, userId:ownerId}` will act as authorization layer.
+  - `users.module.ts`
+  - `users.dtos.ts` -> all the dtos needed for the users controller. should always use swagger decorators, class-validators, class-transformers as needed.
+  - also any `decorators`, `pipes`, `guards`, `types`, related to this feature should be kept inside this module in their respective folders
+- For complex modules, use folders and organize the controllers, entities, dtos and services
+  - `entities/<feature>.entity.ts`
+  - `controllers/<feature>.controller.ts` or in role based scenario use `controllers/<role>-<feature>.controller.ts` where role is who is accessing the api like `admin`, `manager` etc. for normal user skip the `<role>-` prefix.
+  - `dtos/<feature>.dto.ts`
+  - `services/<feature>.dto.ts`
+- Avoid using explicit type inference. Let the type be defined automatically by whats returned. This is not strict btw.
+- You can also make `<feature>.repository.ts` for complex database interaction
+- For reusable things directly keep them inside src/
+  - `decorators` -> keep reusable shared/global decorators here
+    - `decorators/swagger/*.ts` -> swagger related reusable decorators
+    - `decorators/auth/*.ts`
+    - `decorators/validator/*.ts` ->
+  - `dtos/*.ts` -> commonly used dtos
+  - `lib/*.ts` -> globally shared configured objects like db, loggers etc
+  - `utils/*.ts` -> keep utilities function grouped per files, like strings.ts should contain all the string related operations
+  - `assets/*.*` -> keep static assets/media like `assets/email-templates/*.hbs`. For dynamic email templates, use db to store it.
